@@ -105,24 +105,11 @@ def coef_mult(a, b, d):
     d[3] = aes_gmult(a[3],b[0])^aes_gmult(a[2],b[1])^aes_gmult(a[1],b[2])^aes_gmult(a[0],b[3])
     return d
  
+# AES128 - Word 
 K = 0
 Nb = 4
-Nk = 0
-Nr = 0
-
-def aes_init(size):
-    global Nk
-    global Nr
-    if size == 16:    
-        Nk = 4
-        Nr = 10
-    elif size == 24:
-        Nk = 6
-        Nr = 12
-    else:                       #size == 32
-        Nk = 8
-        Nr = 14
-    return Nb*(Nr+1)*4
+Nk = 4
+Nr = 10
 
 R = [0x02, 0x00, 0x00, 0x00]
 
@@ -330,7 +317,6 @@ aes_in = [
 
 aes_out = list(range(16)) 
 
-aes_init(len(key))
 w = list(range(Nb*(Nr+1)*4))
 w = aes_key_expansion(key, w)
 
