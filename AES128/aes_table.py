@@ -643,5 +643,5 @@ aes_in = aes_inv_cipher(aes_out, aes_in, w)
 
 print("Original message (after inv cipher): ")
 for i in range(4):
-    print("{0:02x} {1:02x} {2:02x} {3:02x}".format(aes_in[4*i+0], aes_in[4*i+1], aes_in[4*i+2], aes_out[4*i+3]), end=' ')
+    print("{0:02x} {1:02x} {2:02x} {3:02x}".format(aes_in[4*i+0], aes_in[4*i+1], aes_in[4*i+2], aes_in[4*i+3]), end=' ')
 print('\n')
