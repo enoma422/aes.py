@@ -529,14 +529,15 @@ def aes_inv_cipher(input, output, w):
         state = inv_sub_bytes(state)
         state = add_round_key(state, w, r)
         state = inv_mix_columns(state)
-        
+     
     state = inv_shift_rows(state)
     state = inv_sub_bytes(state)
     state = add_round_key(state, w, 0)
-    
+  
     for i in range(4):
-        for j in range(Nb):
+        for j in range(4):
             output[i+4*j] = state[Nb*i+j]
+            
     return output
 
 # main
@@ -639,6 +640,5 @@ aes_in = aes_inv_cipher(aes_out, aes_in, w)
 
 print("Original message (after inv cipher): ")
 for i in range(4):
-    print("{0:02x} {1:02x} {2:02x} {3:02x}".format(aes_in[4*i+0], aes_in[4*i+1], aes_in[4*i+2], aes_out[4*i+3]), end=' ')
+    print("{0:02x} {1:02x} {2:02x} {3:02x}".format(aes_in[4*i+0], aes_in[4*i+1], aes_in[4*i+2], aes_in[4*i+3]), end=' ')
 print('\n')
-
