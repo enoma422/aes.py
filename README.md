@@ -15,21 +15,30 @@ Original message (after inv cipher):
 
 # AES128_ - over_GF.py
  def aes_gmult(a, b) - xtime
+ 
  def mul_inverse(a) - for i in range(1, 256): aes_gmult(a, i) = 1
+ 
  def affine_trans(x) - over GF(2) : b_i'
+ 
  def mix_columns(state) - xtime
+ 
  
 # AES128_ - EEA_matrix.py
  def aes_gmult(a, b) - polynomial mod m(x)
+ 
  def mul_inverse(a) - Extended Euclidean Algorithm
+ 
  def affine_trans(x) - matrix form
+ 
  def mix_columns(state) - matrix form
+
 
 
 # function file - aes_gmult_inverse.py
  def aes_gmult(a, b)
  1. polynomial mod m(x)
  2. xtime
+
  def mul_inverse(a)
  1. for i in range(1, 256): aes_gmult(a, i) = 1
  2. Extended Euclidean Algorithm
