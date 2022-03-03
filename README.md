@@ -14,3 +14,22 @@ Ciphered message:
 Original message (after inv cipher):
 32 43 f6 a8 88 5a 30 8d 31 31 98 a2 e0 37 07 34
 
+# function file
+# aes_gmult_inverse.py
+ def aes_gmult(a, b)
+ 1. polynomial mod m(x)
+ 2. xtime
+ 
+ def mul_inverse(a)
+ 1. for i in range(1, 256): aes_gmult(a, i) = 1
+ 2. Extended Euclidean Algorithm
+ 
+ # affine_trans.py
+  def affine_trans(x)
+ 1. matrix form
+ 2. over GF(2) : b_i'
+
+# mix_columns.py
+ def mix_columns(state)
+ 1. matrix form
+ 2. xtime
