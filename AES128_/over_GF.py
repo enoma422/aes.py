@@ -19,7 +19,7 @@ def xtime(a):
         res = (a << 1) ^ 0x1b
     else:
         res = a << 1
-    return res % 0x100
+    return res & 0xff
 
 # Multiplication in Gf(2^8)
 def aes_gmult(a, b):
