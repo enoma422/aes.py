@@ -53,7 +53,6 @@ def qr(a, b):
         return [0, a]
     
     q = [0 for _ in range(bit_a - bit_b + 1)]
-    #print("q= {}".format(q))
 
     while True:
         tmp_b = b
