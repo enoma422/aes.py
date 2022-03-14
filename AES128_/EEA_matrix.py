@@ -44,15 +44,57 @@ def aes_gmult(a, b):
     # m = (100011011)_2
     return mod_polynomial(mul_polynomial(a, b), 0b100011011)
 
-# --------------------- EEA로 수정 필요!!!! ----------------------
+# q = a/b, r = a%b (a>b)
+def qr(a, b):
+    bit_b = b.bit_length()
+    bit_a = a.bit_length()
+    
+    if bit_a < bit_b:
+        return [0, a]
+    
+    q = [0 for _ in range(bit_a - bit_b + 1)]
+    #print("q= {}".format(q))
+
+    while True:
+        tmp_b = b
+        bit_a = a.bit_length()
+        q[bit_a - bit_b] ^=  1
+
+        tmp_b <<= (bit_a - bit_b)
+
+        a ^= tmp_b
+
+        if a.bit_length() < b.bit_length():
+            break
+
+    r = a
+    q = ''.join(map(str, q[::-1]))
+
+    return [int(q, 2), r]
+
 # Multiplicative inverse
-def mul_inverse(a):
+def mul_inverse(a): 
+    m = 283
     if a == 0:
-        return 0
-    for i in range(1, 256):
-        if aes_gmult(a, i) == 1:
-            return i
-# ---------------------------------------------------------------
+        return 0    
+    u0 = 1
+    u1 = 0
+    t0 = a
+    t1 = m
+
+    while t1!=0 and t1!=1:
+        t2 = t0
+        t0 = t1
+
+        q_r = qr(t2, t1)
+        q = q_r[0]
+        t1 = q_r[1]
+        
+        u2 = u0
+        u0 = u1
+        u1 = mod_polynomial((u2 ^ mul_polynomial(q, u1)), m)
+
+    return u1
 
 # Affine Transformation
 def affine_trans(a):
@@ -230,13 +272,12 @@ def aes_key_expansion(key, w):
             tmp = rot_word(tmp)
             tmp = sub_word(tmp)
             tmp = coef_add(tmp, Rcon(i/Nk))
-
             
         w[4*i+0] = w[4*(i-Nk)+0]^tmp[0]
         w[4*i+1] = w[4*(i-Nk)+1]^tmp[1]
         w[4*i+2] = w[4*(i-Nk)+2]^tmp[2]
-        w[4*i+3] = w[4*(i-Nk)+3]^tmp[3]    
-      
+        w[4*i+3] = w[4*(i-Nk)+3]^tmp[3]
+        
     return w
 
 def aes_cipher(input, output, w):
