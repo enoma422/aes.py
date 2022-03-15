@@ -96,4 +96,53 @@ def mul_inverse(a):
       
         
 # 2. Extended Euclidean Algorithm
- 
+# q = a/b, r = a%b (a>b)
+def qr(a, b):
+    bit_b = b.bit_length()
+    bit_a = a.bit_length()
+    
+    if bit_a < bit_b:
+        return [0, a]
+    
+    q = [0 for _ in range(bit_a - bit_b + 1)]=
+
+    while True:
+        tmp_b = b
+        bit_a = a.bit_length()
+        q[bit_a - bit_b] ^=  1
+
+        tmp_b <<= (bit_a - bit_b)
+
+        a ^= tmp_b
+
+        if a.bit_length() < b.bit_length():
+            break
+
+    r = a
+    q = ''.join(map(str, q[::-1]))
+
+    return [int(q, 2), r]
+
+# Multiplicative inverse
+def mul_inverse(a): 
+    m = 283
+    if a == 0:
+        return 0    
+    u0 = 1
+    u1 = 0
+    t0 = a
+    t1 = m
+
+    while t1!=0 and t1!=1:
+        t2 = t0
+        t0 = t1
+
+        q_r = qr(t2, t1)
+        q = q_r[0]
+        t1 = q_r[1]
+        
+        u2 = u0
+        u0 = u1
+        u1 = mod_polynomial((u2 ^ mul_polynomial(q, u1)), m)
+
+    return u1
