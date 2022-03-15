@@ -95,7 +95,7 @@ def qr(a, b):
     if bit_a < bit_b:
         return [0, a]
     
-    q = [0 for _ in range(bit_a - bit_b + 1)]=
+    q = [0 for _ in range(bit_a - bit_b + 1)]
 
     while True:
         tmp_b = b
