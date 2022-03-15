@@ -4,7 +4,6 @@
  * Subbytes(gmult - xtime, inverse of multiplication - range(1, 256), affine transformation - coef xor)
  * MixColumns(xtime)
  * Based on the document FIPS PUB 197
- * @2022.03.04
  
 """
 
