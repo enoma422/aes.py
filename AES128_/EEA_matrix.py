@@ -4,7 +4,6 @@
  * Subbytes(gmult - mod m(x), inverse of multiplication - EEA, affine transformation - matrix)
  * MixColumns(matrix)
  * Based on the document FIPS PUB 197
- * @2022.03.04
  
 """
 
