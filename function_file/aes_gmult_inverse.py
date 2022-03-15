@@ -34,20 +34,11 @@ def mul_polynomial(a, b):
         
     return c
 
-def bit_len(a):
-    if a == 0:
-        return 1
-    b = 0
-    while a != 0:
-        b += 1
-        a >>= 1
-    return b
-
 # Modulo an irreducible polynomial
 def mod_polynomial(a, m):
-    bit_m = bit_len(m)
+    bit_m = m.bit_length()
     while True:
-        bit_a = bit_len(a)
+        bit_a = a.bit_length()
         if bit_a < bit_m:
             break
         mshift = m << (bit_a - bit_m)
@@ -69,7 +60,7 @@ def xtime(a):
         res = (a << 1) ^ 0x1b
     else:
         res = a << 1
-    return res % 0x100
+    return res & 0xff
 
 # Multiplication in Gf(2^8)
 def aes_gmult(a, b):
