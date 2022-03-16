@@ -692,7 +692,6 @@ def AES32_round(state, rk):
     
     return state
 
-# inv함수 구현 필요
 def AES32_Inv_round(state, rk):
     tmp = [0 for _ in range(4)]
 
