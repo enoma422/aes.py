@@ -100,7 +100,7 @@ def inv_affine_trans(x):
 
     return int(res, 2)
 
-# Addition of 4 byte words
+# Addition of 4-byte words
 def coef_add(a, b):
     d = list(range(4))
     d[0] = a[0]^b[0]
@@ -137,6 +137,26 @@ def add_round_key(state, w, r):
         state[Nb*3+c] = state[Nb*3+c]^w[4*Nb*r+4*c+3]
     return state
 
+def xtime_mul(a, num):
+    if num == 0x01:
+        return a
+    elif num == 0x02:
+        return xtime(a)
+    elif num == 0x03:
+        return xtime_mul(a, 0x02) ^ xtime_mul(a, 0x01)
+    elif num == 0x04:
+        return xtime_mul(xtime_mul(a, 0x02), 0x02)
+    elif num == 0x08:
+        return xtime_mul(xtime_mul(a, 0x02), 0x04)
+    elif num == 0x09:
+        return xtime_mul(a, 0x08) ^ xtime_mul(a, 0x01)
+    elif num == 0x0b:
+        return xtime_mul(a, 0x08) ^ xtime_mul(a, 0x03)
+    elif num == 0x0d:
+        return xtime_mul(a, 0x08) ^ xtime_mul(a, 0x04) ^ xtime_mul(a, 0x01)
+    elif num == 0x0e:
+        return xtime_mul(a, 0x08) ^ xtime_mul(a, 0x04) ^ xtime_mul(a, 0x02)
+
 def mix_columns(state):
     col = list(range(4))
     res = list(range(4))
@@ -145,10 +165,10 @@ def mix_columns(state):
         for i in range(4):
             col[i] = state[Nb*i+j]
             
-        res[0] = xtime(col[0]) ^ (xtime(col[1])^col[1]) ^ col[2] ^ col[3]
-        res[1] = col[0] ^ xtime(col[1]) ^ (xtime(col[2])^col[2]) ^ col[3]
-        res[2] = col[0] ^ col[1] ^ xtime(col[2]) ^ (xtime(col[3])^col[3])
-        res[3] = (xtime(col[0])^col[0]) ^ col[1] ^ col[2] ^ xtime(col[3])
+        res[0] = (xtime_mul(col[0], 0x02)) ^ (xtime_mul(col[1], 0x03)) ^ (xtime_mul(col[2], 0x01)) ^ (xtime_mul(col[3], 0x01))
+        res[1] = (xtime_mul(col[0], 0x01)) ^ (xtime_mul(col[1], 0x02)) ^ (xtime_mul(col[2], 0x03)) ^ (xtime_mul(col[3], 0x01))
+        res[2] = (xtime_mul(col[0], 0x01)) ^ (xtime_mul(col[1], 0x01)) ^ (xtime_mul(col[2], 0x02)) ^ (xtime_mul(col[3], 0x03))
+        res[3] = (xtime_mul(col[0], 0x03)) ^ (xtime_mul(col[1], 0x01)) ^ (xtime_mul(col[2], 0x01)) ^ (xtime_mul(col[3], 0x02))
         
         for i in range(4):
             state[Nb*i+j] = res[i]
@@ -163,10 +183,10 @@ def inv_mix_columns(state):
         for i in range(4):
             col[i] = state[Nb*i+j]
             
-        res[0] = (xtime(xtime(xtime(col[0])))^xtime(xtime(col[0]))^xtime(col[0])) ^ (xtime(xtime(xtime(col[1])))^xtime(col[1])^col[1]) ^ (xtime(xtime(xtime(col[2])))^xtime(xtime(col[2]))^col[2]) ^ (xtime(xtime(xtime(col[3])))^col[3])
-        res[1] = (xtime(xtime(xtime(col[0])))^col[0]) ^ (xtime(xtime(xtime(col[1])))^xtime(xtime(col[1]))^xtime(col[1])) ^ (xtime(xtime(xtime(col[2])))^xtime(col[2])^col[2]) ^ (xtime(xtime(xtime(col[3])))^xtime(xtime(col[3]))^col[3])
-        res[2] = (xtime(xtime(xtime(col[0])))^xtime(xtime(col[0]))^col[0]) ^ (xtime(xtime(xtime(col[1])))^col[1]) ^ (xtime(xtime(xtime(col[2])))^xtime(xtime(col[2]))^xtime(col[2])) ^ (xtime(xtime(xtime(col[3])))^xtime(col[3])^col[3])
-        res[3] = (xtime(xtime(xtime(col[0])))^xtime(col[0])^col[0]) ^ (xtime(xtime(xtime(col[1])))^xtime(xtime(col[1]))^col[1]) ^ (xtime(xtime(xtime(col[2])))^col[2]) ^ (xtime(xtime(xtime(col[3])))^xtime(xtime(col[3]))^xtime(col[3]))
+        res[0] = (xtime_mul(col[0], 0x0e)) ^ (xtime_mul(col[1], 0x0b)) ^ (xtime_mul(col[2], 0x0d)) ^ (xtime_mul(col[3], 0x09))
+        res[1] = (xtime_mul(col[0], 0x09)) ^ (xtime_mul(col[1], 0x0e)) ^ (xtime_mul(col[2], 0x0b)) ^ (xtime_mul(col[3], 0x0d))
+        res[2] = (xtime_mul(col[0], 0x0d)) ^ (xtime_mul(col[1], 0x09)) ^ (xtime_mul(col[2], 0x0e)) ^ (xtime_mul(col[3], 0x0b))
+        res[3] = (xtime_mul(col[0], 0x0b)) ^ (xtime_mul(col[1], 0x0d)) ^ (xtime_mul(col[2], 0x09)) ^ (xtime_mul(col[3], 0x0e))
         
         for i in range(4):
             state[Nb*i+j] = res[i]
@@ -234,25 +254,20 @@ def aes_key_expansion(key, w):
     k_len = Nb*(Nr+1)
     
     for i in range(Nk):
-        w[4*i+0] = key[4*i+0]
-        w[4*i+1] = key[4*i+1]
-        w[4*i+2] = key[4*i+2]
-        w[4*i+3] = key[4*i+3]
+        for k in range(4):
+            w[4*i+k] = key[4*i+k]
+        
     for i in range(Nk, k_len):
-        tmp[0] = w[4*(i-1)+0]
-        tmp[1] = w[4*(i-1)+1]
-        tmp[2] = w[4*(i-1)+2]
-        tmp[3] = w[4*(i-1)+3]
+        for k in range(4):
+            tmp[k] = w[4*(i-1)+k]
         
         if (i%Nk == 0):
             tmp = rot_word(tmp)
             tmp = sub_word(tmp)
             tmp = coef_add(tmp, Rcon(i/Nk))
-            
-        w[4*i+0] = w[4*(i-Nk)+0]^tmp[0]
-        w[4*i+1] = w[4*(i-Nk)+1]^tmp[1]
-        w[4*i+2] = w[4*(i-Nk)+2]^tmp[2]
-        w[4*i+3] = w[4*(i-Nk)+3]^tmp[3]    
+        
+        for k in range(4):    
+            w[4*i+k] = w[4*(i-Nk)+k]^tmp[k]
       
     return w
 
@@ -344,4 +359,3 @@ aes_in = aes_inv_cipher(aes_out, aes_in, w)
 print("Original message (after inv cipher): ")
 for i in range(4):
     print("{0:02x} {1:02x} {2:02x} {3:02x}".format(aes_in[4*i+0], aes_in[4*i+1], aes_in[4*i+2], aes_in[4*i+3]), end=' ')
-print('\n')
